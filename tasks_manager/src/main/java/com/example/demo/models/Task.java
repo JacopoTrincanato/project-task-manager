@@ -50,7 +50,7 @@ public class Task {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 	
-	public boolean isScaduto() {
+	public boolean isExpired() {
 		return this.deadLine.isBefore(LocalDate.now());
 	}
 	

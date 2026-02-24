@@ -2,11 +2,17 @@ package com.example.demo.models;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
@@ -32,11 +38,15 @@ public class Project {
 	@NotNull
 	private LocalDate creationDate;
 	
-	@OneToMany(mappedBy = "project")
+	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, 
+			orphanRemoval = true)
 	List<Task> tasks;
 	
-	@OneToMany(mappedBy = "project")
-	List<User> users;
+	@ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_project", 
+    joinColumns = @JoinColumn(name = "project_id"), 
+    inverseJoinColumns = @JoinColumn(name = "user_id"))
+	Set<User> users;
 	
 	public void addTask(Task t) {
 		tasks.add(t);
@@ -86,11 +96,11 @@ public class Project {
 		this.tasks = tasks;
 	}
 
-	public List<User> getUsers() {
+	public Set<User> getUsers() {
 		return users;
 	}
 
-	public void setUsers(List<User> users) {
+	public void setUsers(Set<User> users) {
 		this.users = users;
 	}
 }

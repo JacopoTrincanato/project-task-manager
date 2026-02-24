@@ -3,6 +3,8 @@ package com.example.demo.models;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -11,7 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
@@ -37,9 +38,9 @@ public class User {
     inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
     
-    @ManyToOne
-	@JoinColumn(name = "project_id", nullable = false)
-	private Project project;
+    @ManyToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @JsonBackReference
+	private Set<Project> projects;
     
     @OneToMany(mappedBy = "user")
 	List<Task> tasks;
@@ -76,12 +77,12 @@ public class User {
         this.password = password;
     }
 
-	public Project getProject() {
-		return project;
+	public Set<Project> getProjects() {
+		return projects;
 	}
 
-	public void setProject(Project project) {
-		this.project = project;
+	public void setProjects(Set<Project> projects) {
+		this.projects = projects;
 	}
 
 	public List<Task> getTasks() {
