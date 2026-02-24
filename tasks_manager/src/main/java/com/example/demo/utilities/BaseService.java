@@ -1,11 +1,11 @@
 package com.example.demo.utilities;
 
-import java.util.List;
-import java.util.Optional;
+import com.example.demo.pagination.ContentPagination;
 
-public interface BaseService<T, ID> {
-	T save(T entity);
-	Optional<T> findById(ID id);
-	List<T> findAll();
+public interface BaseService<T, U, ID> {
+	U create(U entity);
+	U update(U entity, ID id);
+	T findById(ID id);
+	ContentPagination<T> findAll(int pageNo, int pageSize);
 	void delete(ID id);
 }
