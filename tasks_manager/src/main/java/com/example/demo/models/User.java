@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -19,11 +20,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @NotBlank(message = "Username cannot be blank, empty or null")
     private String username;
@@ -38,11 +39,12 @@ public class User {
     inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
     
-    @ManyToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     @JsonBackReference
 	private Set<Project> projects;
     
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, 
+			orphanRemoval = true)
 	List<Task> tasks;
 
     public Set<Role> getRoles() {
@@ -53,11 +55,11 @@ public class User {
         this.roles = roles;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return this.id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

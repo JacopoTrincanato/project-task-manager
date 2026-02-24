@@ -1,16 +1,18 @@
 package com.example.demo.mappers;
 
-import com.example.demo.dto.TaskDTO;
+import com.example.demo.dto.response.TaskResponseDTO;
 import com.example.demo.models.Task;
 
 public class TaskMapper {
-	public static TaskDTO mapToTaskDto(Task task) {
-		TaskDTO taskDTO = new TaskDTO(
+	public static TaskResponseDTO mapToTaskDto(Task task) {
+		TaskResponseDTO taskDTO = new TaskResponseDTO(
+				task.getId(),
 				task.getTitle(), 
 				task.getDescription(), 
-				task.getStatus().toString(),
-				task.getPriority().toString(),
+				task.getStatus(),
+				task.getPriority(),
 				task.getDeadLine());
+		
 		return taskDTO;
 	}
 }
