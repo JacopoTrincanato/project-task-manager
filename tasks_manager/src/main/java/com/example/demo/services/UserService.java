@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.create.UserCreateDTO;
@@ -37,6 +38,9 @@ public class UserService implements BaseService<UserResponseDTO, UserCreateDTO, 
 	
 	@Autowired
 	private RoleRepository roleRepo;
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 
 	@Override
 	@Transactional
@@ -51,6 +55,7 @@ public class UserService implements BaseService<UserResponseDTO, UserCreateDTO, 
 		        : new HashSet<>();
 		
 		User user = UserMapper.matToUser(dto, roles, tasks);
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		User saved = userRepo.save(user);
 
 		return UserMapper.mapToUserResponseDto(saved);
