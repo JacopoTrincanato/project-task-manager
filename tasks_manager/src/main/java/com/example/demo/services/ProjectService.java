@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.create.ProjectCreateDTO;
 import com.example.demo.dto.response.ProjectResponseDTO;
+import com.example.demo.enums.Status;
 import com.example.demo.exceptions_errors.ProjectNotFoundException;
 import com.example.demo.mappers.ProjectMapper;
 import com.example.demo.models.Project;
@@ -49,10 +50,15 @@ public class ProjectService implements BaseService<ProjectResponseDTO, ProjectCr
 		Set<User> users = dto.userIds() != null
 		        ? new HashSet<>(userRepo.findAllById(dto.userIds()))
 		        : new HashSet<>();
+		
+		Project project = ProjectMapper.mapToProject(dto, tasks, users);
+		Project saved = projectRepo.save(project);
 
-	    Project project = ProjectMapper.mapToProject(dto, tasks, users);
-	    Project saved = projectRepo.save(project);
-	    return ProjectMapper.mapToProjectResponseDto(saved);
+		int done = taskRepo.countByProjectIdAndStatus(saved.getId(), Status.DONE);
+		int inProgress = taskRepo.countByProjectIdAndStatus(saved.getId(), Status.IN_PROGRESS);
+		int todo = taskRepo.countByProjectIdAndStatus(saved.getId(), Status.TODO);
+
+		return ProjectMapper.mapToProjectResponseDto(saved, done, inProgress, todo);
 	}
 	
 	@Override
@@ -76,10 +82,16 @@ public class ProjectService implements BaseService<ProjectResponseDTO, ProjectCr
 		        : new HashSet<>();
 		
 		project.setTasks(tasks);
+		tasks.forEach(task -> task.setProject(project));
 		project.setUsers(users);
 		
 		Project saved = projectRepo.save(project);
-		return ProjectMapper.mapToProjectResponseDto(saved);
+
+		int done = taskRepo.countByProjectIdAndStatus(saved.getId(), Status.DONE);
+		int inProgress = taskRepo.countByProjectIdAndStatus(saved.getId(), Status.IN_PROGRESS);
+		int todo = taskRepo.countByProjectIdAndStatus(saved.getId(), Status.TODO);
+
+	    return ProjectMapper.mapToProjectResponseDto(saved, done, inProgress, todo);
 	}
 
 	@Override
@@ -88,7 +100,12 @@ public class ProjectService implements BaseService<ProjectResponseDTO, ProjectCr
 		Project project = projectRepo.findById(id).orElseThrow(
 				() -> new ProjectNotFoundException("Project not Found with id: " + id)
 				);
-		return ProjectMapper.mapToProjectResponseDto(project);
+		
+		int done = taskRepo.countByProjectIdAndStatus(project.getId(), Status.DONE);
+	    int inProgress = taskRepo.countByProjectIdAndStatus(project.getId(), Status.IN_PROGRESS);
+	    int todo = taskRepo.countByProjectIdAndStatus(project.getId(), Status.TODO);
+
+	    return ProjectMapper.mapToProjectResponseDto(project, done, inProgress, todo);
 	}
 
 	@Override
@@ -98,7 +115,12 @@ public class ProjectService implements BaseService<ProjectResponseDTO, ProjectCr
 		Page<Project> projects = projectRepo.findAll(pageable);
 		List<Project> listOfProjects = projects.getContent();
 		List<ProjectResponseDTO> content = listOfProjects.stream()
-				.map(ProjectMapper::mapToProjectResponseDto)
+				.map(p -> {
+					int done = taskRepo.countByProjectIdAndStatus(p.getId(), Status.DONE);
+				    int inProgress = taskRepo.countByProjectIdAndStatus(p.getId(), Status.IN_PROGRESS);
+				    int todo = taskRepo.countByProjectIdAndStatus(p.getId(), Status.TODO);
+				    return ProjectMapper.mapToProjectResponseDto(p, done, inProgress, todo);
+				})
 				.toList();
 		
 		ContentPagination<ProjectResponseDTO> projectResponse = new ContentPagination<>();
@@ -124,7 +146,12 @@ public class ProjectService implements BaseService<ProjectResponseDTO, ProjectCr
 		Project project = projectRepo.findByTitle(title).orElseThrow(
 				() -> new ProjectNotFoundException("Project not Found with title: " + title)
 				);
-		return ProjectMapper.mapToProjectResponseDto(project);
+		
+		int done = taskRepo.countByProjectIdAndStatus(project.getId(), Status.DONE);
+	    int inProgress = taskRepo.countByProjectIdAndStatus(project.getId(), Status.IN_PROGRESS);
+	    int todo = taskRepo.countByProjectIdAndStatus(project.getId(), Status.TODO);
+
+	    return ProjectMapper.mapToProjectResponseDto(project, done, inProgress, todo);
 	}
 
 }

@@ -11,5 +11,7 @@ import com.example.demo.models.Task;
 public interface TaskRepository extends JpaRepository<Task, Long> {
 	List<Task> findByStatus(Status status);
 	List<Task> findByPriority(Priority priority);
+	int countByProjectIdAndStatus(Long projectId, Status status);
+	int countByProjectIdAndPriority(Long projectId, Priority priority);
 }
 

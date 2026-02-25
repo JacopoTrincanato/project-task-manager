@@ -112,15 +112,13 @@ public class TaskService implements BaseService<TaskResponseDTO, TaskCreateDTO, 
 	}
 	
 	public List<TaskResponseDTO> findByStatus(Status status) {
-		return taskRepo.findAll().stream()
-				.filter(t -> t.getStatus() == status)
+		return taskRepo.findByStatus(status).stream()
 				.map(TaskMapper::mapToTaskDto)
 				.toList();
 	}
 	
 	public List<TaskResponseDTO> findByPriority(Priority priority) {
-		return taskRepo.findAll().stream()
-				.filter(t -> t.getPriority() == priority)
+		return taskRepo.findByPriority(priority).stream()
 				.map(TaskMapper::mapToTaskDto)
 				.toList();
 	}
