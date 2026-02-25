@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.create.ProjectCreateDTO;
 import com.example.demo.dto.response.ProjectResponseDTO;
+import com.example.demo.exceptions_errors.ProjectNotFoundException;
 import com.example.demo.mappers.ProjectMapper;
 import com.example.demo.models.Project;
 import com.example.demo.models.Task;
@@ -60,7 +61,9 @@ public class ProjectService implements BaseService<ProjectResponseDTO, ProjectCr
 	@Transactional
 	public ProjectResponseDTO update(ProjectCreateDTO dto, Long id) {
 		// TODO Auto-generated method stub
-		Project project = projectRepo.findById(id).orElse(null);
+		Project project = projectRepo.findById(id).orElseThrow(
+				() -> new ProjectNotFoundException("Project not Found with id: " + id)
+				);
 		
 		project.setName(dto.name());
 		project.setDescription(dto.description());
@@ -85,7 +88,9 @@ public class ProjectService implements BaseService<ProjectResponseDTO, ProjectCr
 	@Override
 	public ProjectResponseDTO findById(Long id) {
 		// TODO Auto-generated method stub
-		Project project = projectRepo.findById(id).orElse(null);
+		Project project = projectRepo.findById(id).orElseThrow(
+				() -> new ProjectNotFoundException("Project not Found with id: " + id)
+				);
 		return ProjectMapper.mapToProjectResponseDto(project);
 	}
 
