@@ -29,9 +29,17 @@ public class ProjectRestController {
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getProjectDetails(@PathVariable("id") Long id) {
+	public ResponseEntity<?> getProjectById(@PathVariable("id") Long id) {
 
 		ProjectResponseDTO project = projectService.findById(id);
+		return new ResponseEntity<>(project, HttpStatus.OK);
+
+	}
+	
+	@GetMapping("/{title}")
+	public ResponseEntity<?> getProjectByTitle(@PathVariable("title") String title) {
+
+		ProjectResponseDTO project = projectService.findByTitle(title);
 		return new ResponseEntity<>(project, HttpStatus.OK);
 
 	}

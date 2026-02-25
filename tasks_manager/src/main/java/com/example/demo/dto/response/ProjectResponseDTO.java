@@ -7,7 +7,7 @@ public record ProjectResponseDTO(
 		String name, 
 		String description, 
 		LocalDate creationDate,
-		Long taskEseguiti,
-		Long taskInEsecuzione,
-		Long taskDaEseguire
+		int taskEseguiti,
+		int taskInEsecuzione,
+		int taskDaEseguire
 		) {}

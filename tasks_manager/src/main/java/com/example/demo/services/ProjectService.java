@@ -51,9 +51,7 @@ public class ProjectService implements BaseService<ProjectResponseDTO, ProjectCr
 		        : new HashSet<>();
 
 	    Project project = ProjectMapper.mapToProject(dto, tasks, users);
-
 	    Project saved = projectRepo.save(project);
-
 	    return ProjectMapper.mapToProjectResponseDto(saved);
 	}
 	
@@ -81,7 +79,6 @@ public class ProjectService implements BaseService<ProjectResponseDTO, ProjectCr
 		project.setUsers(users);
 		
 		Project saved = projectRepo.save(project);
-		
 		return ProjectMapper.mapToProjectResponseDto(saved);
 	}
 
@@ -118,7 +115,16 @@ public class ProjectService implements BaseService<ProjectResponseDTO, ProjectCr
 	@Override
 	public void delete(Long id) {
 		// TODO Auto-generated method stub
+		if (!projectRepo.existsById(id)) throw new ProjectNotFoundException("Project not Found with id: " + id);
 		projectRepo.deleteById(id);
+	}
+	
+	public ProjectResponseDTO findByTitle(String title) {
+		// TODO Auto-generated method stub
+		Project project = projectRepo.findByTitle(title).orElseThrow(
+				() -> new ProjectNotFoundException("Project not Found with title: " + title)
+				);
+		return ProjectMapper.mapToProjectResponseDto(project);
 	}
 
 }
