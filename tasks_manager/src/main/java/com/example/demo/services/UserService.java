@@ -76,7 +76,6 @@ public class UserService implements BaseService<UserResponseDTO, UserCreateDTO, 
 		        : new HashSet<>();
 
 		user.setTasks(tasks);
-		tasks.forEach(task -> task.setUser(user));
 		user.setRoles(roles);
 		
 		User saved = userRepo.save(user);

@@ -36,7 +36,7 @@ public class ProjectRestController {
 	}
 	
 	@GetMapping("/id/{id}")
-	public ResponseEntity<?> getProjectById(@PathVariable("id") @Valid Long id) {
+	public ResponseEntity<ProjectResponseDTO> getProjectById(@PathVariable("id") Long id) {
 
 		ProjectResponseDTO project = projectService.findById(id);
 		return new ResponseEntity<>(project, HttpStatus.OK);
@@ -44,7 +44,7 @@ public class ProjectRestController {
 	}
 	
 	@GetMapping("/title/{title}")
-	public ResponseEntity<?> getProjectByTitle(@PathVariable("title") @Valid String title) {
+	public ResponseEntity<ProjectResponseDTO> getProjectByTitle(@PathVariable("title") String title) {
 
 		ProjectResponseDTO project = projectService.findByTitle(title);
 		return new ResponseEntity<>(project, HttpStatus.OK);
@@ -52,22 +52,22 @@ public class ProjectRestController {
 	}
 	
 	@PostMapping
-    public ResponseEntity<?> createProject(@Valid @RequestBody ProjectCreateDTO project) {
+    public ResponseEntity<ProjectResponseDTO> createProject(@Valid @RequestBody ProjectCreateDTO project) {
 
         return new ResponseEntity<>(projectService.create(project), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateProject(@Valid @RequestBody ProjectCreateDTO project, @Valid @PathVariable Long id) {
+    public ResponseEntity<ProjectResponseDTO> updateProject(@Valid @RequestBody ProjectCreateDTO project, @PathVariable Long id) {
 
         return new ResponseEntity<>(projectService.update(project, id), HttpStatus.OK);
 
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProject(@Valid @PathVariable Long id) {
+    public ResponseEntity<ProjectResponseDTO> deleteProject(@PathVariable Long id) {
 
         projectService.delete(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 }
