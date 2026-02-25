@@ -70,7 +70,10 @@ public class UserService implements BaseService<UserResponseDTO, UserCreateDTO, 
 				);
 		
 		user.setUsername(dto.username());
-		user.setPassword(dto.password());
+		
+		if (dto.password() != null && !dto.password().isBlank()) {
+		    user.setPassword(passwordEncoder.encode(dto.password()));
+		}
 		
 		List<Task> tasks = dto.taskIds() != null
 		        ? taskRepo.findAllById(dto.taskIds())
