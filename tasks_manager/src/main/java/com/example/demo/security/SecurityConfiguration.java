@@ -37,8 +37,8 @@ public class SecurityConfiguration {
       	.authorizeHttpRequests(requests -> requests
 	        .requestMatchers("/user").hasAuthority("USER")
 	        .requestMatchers("/admin").hasAuthority("ADMIN")
-	        .requestMatchers("/login").permitAll()
-	        .requestMatchers("/register").permitAll()
+	        .requestMatchers("/users/login").permitAll()
+	        .requestMatchers("/users/register").permitAll()
 	        .anyRequest().authenticated());
       return http.httpBasic(Customizer.withDefaults()).build();
 	}

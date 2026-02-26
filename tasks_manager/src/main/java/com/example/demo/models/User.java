@@ -32,6 +32,8 @@ public class User {
     @NotBlank(message = "Password cannot be blank, empty or null")
     @Size(min = 8, message = "Password length has to be at least 8 chars")
     private String password;
+    
+    //private String passwordHash;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "role_user", 
@@ -75,7 +77,15 @@ public class User {
         return this.password;
     }
 
-    public void setPassword(String password) {
+    /*public String getPasswordHash() {
+		return passwordHash;
+	}
+
+	public void setPasswordHash(String passwordHash) {
+		this.passwordHash = passwordHash;
+	}*/
+
+	public void setPassword(String password) {
         this.password = password;
     }
 

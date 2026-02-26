@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dto.create.UserCreateDTO;
 import com.example.demo.dto.response.UserResponseDTO;
+import com.example.demo.models.LoginRequest;
 import com.example.demo.pagination.ContentPagination;
 import com.example.demo.services.UserService;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @RestController
@@ -42,16 +44,33 @@ public class UserRestController {
 
 	}
 	
-	@PostMapping
-    public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserCreateDTO task) {
+	@PostMapping("/register")
+    public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserCreateDTO user) {
 
-        return new ResponseEntity<>(userService.create(task), HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.create(user), HttpStatus.CREATED);
+    }
+	
+	@PostMapping("/login")
+    public ResponseEntity<String> createUser(@Valid @RequestBody LoginRequest loginRequest, HttpSession session) {
+
+        try {
+        	boolean isAuthenticated = userService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
+        	
+        	if (isAuthenticated) {
+        		session.setAttribute("USER", loginRequest.getUsername());
+        		return new ResponseEntity<>("Login was successful", HttpStatus.OK);
+        	} else {
+        		return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
+        	}
+        } catch (Exception e) {
+        	return new ResponseEntity<>("An error occured", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> updateUser(@Valid @RequestBody UserCreateDTO task, @PathVariable Long id) {
+    public ResponseEntity<UserResponseDTO> updateUser(@Valid @RequestBody UserCreateDTO user, @PathVariable Long id) {
 
-        return new ResponseEntity<>(userService.update(task, id), HttpStatus.OK);
+        return new ResponseEntity<>(userService.update(user, id), HttpStatus.OK);
 
     }
 

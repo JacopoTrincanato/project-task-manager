@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -136,5 +137,17 @@ public class UserService implements BaseService<UserResponseDTO, UserCreateDTO, 
 				);
 
 		return UserMapper.mapToUserResponseDto(user);
+	}
+	
+	public boolean authenticate(String username, String password) {
+		User user = userRepo.findByUsername(username).orElseThrow(
+				() -> new UserNotFoundException("User not Found with username: " + username)
+				);
+		
+		if (!passwordEncoder.matches(password, user.getPassword())) {
+		    throw new BadCredentialsException("The password is incorrect");
+		}
+		
+		return true;
 	}
 }
