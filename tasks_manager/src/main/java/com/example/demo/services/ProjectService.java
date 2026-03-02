@@ -29,13 +29,13 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class ProjectService implements BaseService<ProjectResponseDTO, ProjectCreateDTO, Long> {
-	
+
 	@Autowired
 	private ProjectRepository projectRepo;
-	
+
 	@Autowired
 	private TaskRepository taskRepo;
-	
+
 	@Autowired
 	private UserRepository userRepo;
 
@@ -44,13 +44,13 @@ public class ProjectService implements BaseService<ProjectResponseDTO, ProjectCr
 	public ProjectResponseDTO create(ProjectCreateDTO dto) {
 
 		List<Task> tasks = dto.taskIds() != null
-		        ? taskRepo.findAllById(dto.taskIds())
-		        : new ArrayList<>();
+				? taskRepo.findAllById(dto.taskIds())
+				: new ArrayList<>();
 
 		Set<User> users = dto.userIds() != null
-		        ? new HashSet<>(userRepo.findAllById(dto.userIds()))
-		        : new HashSet<>();
-		
+				? new HashSet<>(userRepo.findAllById(dto.userIds()))
+				: new HashSet<>();
+
 		Project project = ProjectMapper.mapToProject(dto, tasks, users);
 		Project saved = projectRepo.save(project);
 
@@ -60,52 +60,50 @@ public class ProjectService implements BaseService<ProjectResponseDTO, ProjectCr
 
 		return ProjectMapper.mapToProjectResponseDto(saved, done, inProgress, todo);
 	}
-	
+
 	@Override
 	@Transactional
 	public ProjectResponseDTO update(ProjectCreateDTO dto, Long id) {
 		// TODO Auto-generated method stub
 		Project project = projectRepo.findById(id).orElseThrow(
-				() -> new ProjectNotFoundException("Project not Found with id: " + id)
-				);
-		
+				() -> new ProjectNotFoundException("Project not Found with id: " + id));
+
 		project.setName(dto.name());
 		project.setDescription(dto.description());
 		project.setCreationDate(dto.creationDate());
-		
+
 		List<Task> tasks = dto.taskIds() != null
-		        ? taskRepo.findAllById(dto.taskIds())
-		        : new ArrayList<>();
+				? taskRepo.findAllById(dto.taskIds())
+				: new ArrayList<>();
 
 		Set<User> users = dto.userIds() != null
-		        ? new HashSet<>(userRepo.findAllById(dto.userIds()))
-		        : new HashSet<>();
-		
+				? new HashSet<>(userRepo.findAllById(dto.userIds()))
+				: new HashSet<>();
+
 		project.setTasks(tasks);
 		tasks.forEach(task -> task.setProject(project));
 		project.setUsers(users);
-		
+
 		Project saved = projectRepo.save(project);
 
 		int done = taskRepo.countByProjectIdAndStatus(saved.getId(), Status.DONE);
 		int inProgress = taskRepo.countByProjectIdAndStatus(saved.getId(), Status.IN_PROGRESS);
 		int todo = taskRepo.countByProjectIdAndStatus(saved.getId(), Status.TODO);
 
-	    return ProjectMapper.mapToProjectResponseDto(saved, done, inProgress, todo);
+		return ProjectMapper.mapToProjectResponseDto(saved, done, inProgress, todo);
 	}
 
 	@Override
 	public ProjectResponseDTO findById(Long id) {
 		// TODO Auto-generated method stub
 		Project project = projectRepo.findById(id).orElseThrow(
-				() -> new ProjectNotFoundException("Project not Found with id: " + id)
-				);
-		
-		int done = taskRepo.countByProjectIdAndStatus(project.getId(), Status.DONE);
-	    int inProgress = taskRepo.countByProjectIdAndStatus(project.getId(), Status.IN_PROGRESS);
-	    int todo = taskRepo.countByProjectIdAndStatus(project.getId(), Status.TODO);
+				() -> new ProjectNotFoundException("Project not Found with id: " + id));
 
-	    return ProjectMapper.mapToProjectResponseDto(project, done, inProgress, todo);
+		int done = taskRepo.countByProjectIdAndStatus(project.getId(), Status.DONE);
+		int inProgress = taskRepo.countByProjectIdAndStatus(project.getId(), Status.IN_PROGRESS);
+		int todo = taskRepo.countByProjectIdAndStatus(project.getId(), Status.TODO);
+
+		return ProjectMapper.mapToProjectResponseDto(project, done, inProgress, todo);
 	}
 
 	@Override
@@ -117,12 +115,12 @@ public class ProjectService implements BaseService<ProjectResponseDTO, ProjectCr
 		List<ProjectResponseDTO> content = listOfProjects.stream()
 				.map(p -> {
 					int done = taskRepo.countByProjectIdAndStatus(p.getId(), Status.DONE);
-				    int inProgress = taskRepo.countByProjectIdAndStatus(p.getId(), Status.IN_PROGRESS);
-				    int todo = taskRepo.countByProjectIdAndStatus(p.getId(), Status.TODO);
-				    return ProjectMapper.mapToProjectResponseDto(p, done, inProgress, todo);
+					int inProgress = taskRepo.countByProjectIdAndStatus(p.getId(), Status.IN_PROGRESS);
+					int todo = taskRepo.countByProjectIdAndStatus(p.getId(), Status.TODO);
+					return ProjectMapper.mapToProjectResponseDto(p, done, inProgress, todo);
 				})
 				.toList();
-		
+
 		ContentPagination<ProjectResponseDTO> projectResponse = new ContentPagination<>();
 		projectResponse.setContent(content);
 		projectResponse.setPageNo(projects.getNumber());
@@ -130,28 +128,28 @@ public class ProjectService implements BaseService<ProjectResponseDTO, ProjectCr
 		projectResponse.setTotalElements(projects.getTotalElements());
 		projectResponse.setTotalPages(projects.getTotalPages());
 		projectResponse.setLast(projects.isLast());
-		
+
 		return projectResponse;
 	}
 
 	@Override
 	public void delete(Long id) {
 		// TODO Auto-generated method stub
-		if (!projectRepo.existsById(id)) throw new ProjectNotFoundException("Project not Found with id: " + id);
+		if (!projectRepo.existsById(id))
+			throw new ProjectNotFoundException("Project not Found with id: " + id);
 		projectRepo.deleteById(id);
 	}
-	
-	public ProjectResponseDTO findByTitle(String title) {
-		// TODO Auto-generated method stub
-		Project project = projectRepo.findByTitle(title).orElseThrow(
-				() -> new ProjectNotFoundException("Project not Found with title: " + title)
-				);
-		
-		int done = taskRepo.countByProjectIdAndStatus(project.getId(), Status.DONE);
-	    int inProgress = taskRepo.countByProjectIdAndStatus(project.getId(), Status.IN_PROGRESS);
-	    int todo = taskRepo.countByProjectIdAndStatus(project.getId(), Status.TODO);
 
-	    return ProjectMapper.mapToProjectResponseDto(project, done, inProgress, todo);
+	public ProjectResponseDTO findByName(String name) {
+		// TODO Auto-generated method stub
+		Project project = projectRepo.findByName(name).orElseThrow(
+				() -> new ProjectNotFoundException("Project not Found with name: " + name));
+
+		int done = taskRepo.countByProjectIdAndStatus(project.getId(), Status.DONE);
+		int inProgress = taskRepo.countByProjectIdAndStatus(project.getId(), Status.IN_PROGRESS);
+		int todo = taskRepo.countByProjectIdAndStatus(project.getId(), Status.TODO);
+
+		return ProjectMapper.mapToProjectResponseDto(project, done, inProgress, todo);
 	}
 
 }

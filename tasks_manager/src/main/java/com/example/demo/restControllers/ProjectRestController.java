@@ -26,15 +26,15 @@ public class ProjectRestController {
 
 	@Autowired
 	private ProjectService projectService;
-	
+
 	@GetMapping
 	public ResponseEntity<ContentPagination<ProjectResponseDTO>> getProjects(
 			@RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
 			@RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
-		
+
 		return new ResponseEntity<>(projectService.findAll(pageNo, pageSize), HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/id/{id}")
 	public ResponseEntity<ProjectResponseDTO> getProjectById(@PathVariable("id") Long id) {
 
@@ -42,32 +42,33 @@ public class ProjectRestController {
 		return new ResponseEntity<>(project, HttpStatus.OK);
 
 	}
-	
-	@GetMapping("/title/{title}")
-	public ResponseEntity<ProjectResponseDTO> getProjectByTitle(@PathVariable("title") String title) {
 
-		ProjectResponseDTO project = projectService.findByTitle(title);
+	@GetMapping("/name/{name}")
+	public ResponseEntity<ProjectResponseDTO> getProjectByName(@PathVariable("name") String name) {
+
+		ProjectResponseDTO project = projectService.findByName(name);
 		return new ResponseEntity<>(project, HttpStatus.OK);
 
 	}
-	
+
 	@PostMapping
-    public ResponseEntity<ProjectResponseDTO> createProject(@Valid @RequestBody ProjectCreateDTO project) {
+	public ResponseEntity<ProjectResponseDTO> createProject(@Valid @RequestBody ProjectCreateDTO project) {
 
-        return new ResponseEntity<>(projectService.create(project), HttpStatus.CREATED);
-    }
+		return new ResponseEntity<>(projectService.create(project), HttpStatus.CREATED);
+	}
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ProjectResponseDTO> updateProject(@Valid @RequestBody ProjectCreateDTO project, @PathVariable Long id) {
+	@PutMapping("/{id}")
+	public ResponseEntity<ProjectResponseDTO> updateProject(@Valid @RequestBody ProjectCreateDTO project,
+			@PathVariable Long id) {
 
-        return new ResponseEntity<>(projectService.update(project, id), HttpStatus.OK);
+		return new ResponseEntity<>(projectService.update(project, id), HttpStatus.OK);
 
-    }
+	}
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ProjectResponseDTO> deleteProject(@PathVariable Long id) {
+	@DeleteMapping("/{id}")
+	public ResponseEntity<ProjectResponseDTO> deleteProject(@PathVariable Long id) {
 
-        projectService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
+		projectService.delete(id);
+		return ResponseEntity.noContent().build();
+	}
 }

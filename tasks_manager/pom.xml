@@ -13,7 +13,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>tasks_manager</name>
 	<description>Demo project for Spring Boot</description>
-	<url/>
+	<url>http://localhost:8080</url>
 	<licenses>
 		<license/>
 	</licenses>
